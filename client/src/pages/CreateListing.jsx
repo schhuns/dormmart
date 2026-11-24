@@ -100,8 +100,8 @@ const CreateListing = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length + totalImages > 5) {
-      alert("You can have a maximum of 5 images per listing.");
+    if (files.length + totalImages > 2) {
+      alert(t("photoLimitAlert") || "You can upload a maximum of 2 images per listing.");
       return;
     }
 
@@ -216,14 +216,14 @@ const CreateListing = () => {
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 block">
               {t("productPhotos")} <span className="text-rose-500">*</span>{" "}
-              <span className="text-slate-400 dark:text-slate-500 font-normal">({totalImages}/5 images)</span>
+              <span className="text-slate-400 dark:text-slate-500 font-normal">({totalImages}/2 images)</span>
             </label>
             <span className="text-[11px] text-slate-400 dark:text-slate-500">
               {t("photoLimit")}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4 max-w-md">
             {/* Existing Images (when editing) */}
             {existingImages.map((imgUrl, idx) => (
               <div key={`existing-${idx}`} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 group shadow-xs">
@@ -263,7 +263,7 @@ const CreateListing = () => {
             ))}
 
             {/* Upload Button */}
-            {totalImages < 5 && (
+            {totalImages < 2 && (
               <label className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-brand-blue dark:hover:border-brand-blue rounded-2xl aspect-square flex flex-col items-center justify-center cursor-pointer p-4 text-center hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-all">
                 <UploadCloud className="w-7 h-7 text-slate-400 dark:text-slate-500 mb-1" />
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">

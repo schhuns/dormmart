@@ -23,8 +23,8 @@ router.get("/:id", optionalAuth, getProductById);
 router.get("/:id/contact", getSellerContacts);
 
 // Protected listing management
-router.post("/", authenticate, upload.array("images", 5), createProduct);
-router.patch("/:id", authenticate, upload.array("images", 5), updateProduct);
+router.post("/", authenticate, upload.array("images", 2), createProduct);
+router.patch("/:id", authenticate, upload.array("images", 2), updateProduct);
 router.patch("/:id/status", authenticate, updateProductStatus);
 router.delete("/:id", authenticate, deleteProduct);
 

@@ -58,6 +58,8 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ error: "At least one product image is required" });
     }
 
+    imageUrls = imageUrls.slice(0, 2); // Limit to 2 images per product
+
     const product = await Product.create({
       sellerId: req.user._id,
       categoryId,
@@ -352,7 +354,7 @@ export const updateProduct = async (req, res) => {
     }
 
     if (updatedImages.length > 0) {
-      product.images = updatedImages.slice(0, 5); // Max 5 images
+      product.images = updatedImages.slice(0, 2); // Max 2 images
     }
 
     await product.save();
