@@ -366,7 +366,7 @@ const CreateListing = () => {
               </label>
               <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                 {price && Number(price) > 0
-                  ? Number(price).toLocaleString("vi-VN") + " ₫"
+                  ? Number(price).toLocaleString("en-US") + " ₫"
                   : t("freeNotice")}
               </span>
             </div>
