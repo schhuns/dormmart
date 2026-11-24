@@ -381,125 +381,131 @@ const Marketplace = () => {
 
       {/* Mobile & Tablet Slide-Over Filter Drawer Modal */}
       {filtersOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm p-0 sm:p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[88vh] overflow-y-auto p-5 sm:p-6 shadow-2xl space-y-5 animate-slide-up sm:animate-fade-in border border-slate-200/50 dark:border-slate-800">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
+        <div className="lg:hidden fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-slate-950/70 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-lg w-full max-h-[90dvh] sm:max-h-[85vh] flex flex-col shadow-2xl border border-slate-200/80 dark:border-slate-800 animate-slide-up sm:animate-zoom-in-95 overflow-hidden">
+            {/* Fixed Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex-shrink-0 bg-white dark:bg-slate-900">
               <span className="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
                 <SlidersHorizontal className="w-4 h-4 text-brand-blue" />
                 {t("filterProducts")}
               </span>
               <button
                 onClick={() => setFiltersOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                aria-label="Close filters"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Category */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
-                {t("categories")}
-              </label>
-              <div className="grid grid-cols-1 gap-1">
-                <button
-                  onClick={() => updateFilter("category", "")}
-                  className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
-                    !selectedCategory
-                      ? "bg-brand-navy dark:bg-brand-blue text-white"
-                      : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
-                  }`}
-                >
-                  {t("allCategories")}
-                </button>
-                {categories.map((c) => (
+            {/* Scrollable Filter Body */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-5">
+              {/* Category */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+                  {t("categories")}
+                </label>
+                <div className="grid grid-cols-1 gap-1">
                   <button
-                    key={c._id}
-                    onClick={() => updateFilter("category", c._id === selectedCategory ? "" : c._id)}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between ${
-                      selectedCategory === c._id
-                        ? "bg-brand-navy dark:bg-brand-blue text-white font-semibold"
+                    onClick={() => updateFilter("category", "")}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                      !selectedCategory
+                        ? "bg-brand-navy dark:bg-brand-blue text-white"
                         : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                     }`}
                   >
-                    <span>{translateCategory(c.name)}</span>
-                    {c.availableCount > 0 && (
-                      <span className="text-[10px] opacity-80">({c.availableCount})</span>
-                    )}
+                    {t("allCategories")}
                   </button>
-                ))}
+                  {categories.map((c) => (
+                    <button
+                      key={c._id}
+                      onClick={() => updateFilter("category", c._id === selectedCategory ? "" : c._id)}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between ${
+                        selectedCategory === c._id
+                          ? "bg-brand-navy dark:bg-brand-blue text-white font-semibold"
+                          : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                      }`}
+                    >
+                      <span>{translateCategory(c.name)}</span>
+                      {c.availableCount > 0 && (
+                        <span className="text-[10px] opacity-80">({c.availableCount})</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Condition */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
-                {t("condition")}
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {CONDITIONS.map((cond) => (
-                  <button
-                    key={cond}
-                    onClick={() =>
-                      updateFilter("condition", selectedCondition === cond ? "" : cond)
-                    }
-                    className={`px-3 py-2 rounded-xl text-xs font-semibold border text-center transition-all ${
-                      selectedCondition === cond
-                        ? "bg-brand-navy dark:bg-brand-blue text-white border-brand-navy dark:border-brand-blue"
-                        : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
-                    }`}
-                  >
-                    {translateCondition(cond)}
-                  </button>
-                ))}
+              {/* Condition */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+                  {t("condition")}
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {CONDITIONS.map((cond) => (
+                    <button
+                      key={cond}
+                      onClick={() =>
+                        updateFilter("condition", selectedCondition === cond ? "" : cond)
+                      }
+                      className={`px-3 py-2 rounded-xl text-xs font-semibold border text-center transition-all ${
+                        selectedCondition === cond
+                          ? "bg-brand-navy dark:bg-brand-blue text-white border-brand-navy dark:border-brand-blue"
+                          : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
+                      }`}
+                    >
+                      {translateCondition(cond)}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Price Range */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
-                {t("priceRange")}
-              </label>
-              <div className="flex items-center gap-2">
+              {/* Price Range */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+                  {t("priceRange")}
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min ₫"
+                    step="1000"
+                    value={minPrice}
+                    onChange={(e) => updateFilter("minPrice", e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-base sm:text-xs px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"
+                  />
+                  <span className="text-slate-400">-</span>
+                  <input
+                    type="number"
+                    placeholder="Max ₫"
+                    step="1000"
+                    value={maxPrice}
+                    onChange={(e) => updateFilter("maxPrice", e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-base sm:text-xs px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Meeting Spot */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+                  {t("generalMeetingSpot")}
+                </label>
                 <input
-                  type="number"
-                  placeholder="Min ₫"
-                  step="1000"
-                  value={minPrice}
-                  onChange={(e) => updateFilter("minPrice", e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"
-                />
-                <span className="text-slate-400">-</span>
-                <input
-                  type="number"
-                  placeholder="Max ₫"
-                  step="1000"
-                  value={maxPrice}
-                  onChange={(e) => updateFilter("maxPrice", e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"
+                  type="text"
+                  placeholder={t("meetingSpotPlaceholder")}
+                  value={locationInput}
+                  onChange={(e) => setLocationInput(e.target.value)}
+                  onBlur={handleLocationSubmit}
+                  className="w-full bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-base sm:text-xs px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"
                 />
               </div>
             </div>
 
-            {/* Meeting Spot */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
-                {t("generalMeetingSpot")}
-              </label>
-              <input
-                type="text"
-                placeholder={t("meetingSpotPlaceholder")}
-                value={locationInput}
-                onChange={(e) => setLocationInput(e.target.value)}
-                onBlur={handleLocationSubmit}
-                className="w-full bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:outline-none"
-              />
-            </div>
-
-            {/* Bottom Actions */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-3 sticky bottom-0 bg-white dark:bg-slate-900 pb-2">
+            {/* Fixed Always-Visible Footer Action Bar */}
+            <div className="flex-shrink-0 px-5 py-4 border-t border-slate-100 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] flex items-center gap-3">
               {hasActiveFilters && (
                 <button
+                  type="button"
                   onClick={clearAllFilters}
                   className="flex-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 py-3 rounded-full text-xs font-bold transition-colors"
                 >
@@ -507,8 +513,9 @@ const Marketplace = () => {
                 </button>
               )}
               <button
+                type="button"
                 onClick={() => setFiltersOpen(false)}
-                className="flex-1 bg-brand-navy dark:bg-brand-blue hover:bg-brand-blue dark:hover:bg-blue-600 text-white py-3 rounded-full text-xs font-bold shadow-md transition-all text-center"
+                className="flex-1 bg-brand-navy dark:bg-brand-blue hover:bg-brand-blue dark:hover:bg-blue-600 text-white py-3 rounded-full text-xs font-bold shadow-md active:scale-95 transition-all text-center"
               >
                 {t("applyFilters")} ({totalCount})
               </button>
