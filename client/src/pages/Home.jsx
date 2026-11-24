@@ -3,11 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import ProductCard from "../components/ProductCard";
 import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from "../context/AuthContext";
 import {
   Search,
   PlusCircle,
   ArrowRight,
   Sparkles,
+  Package,
 } from "lucide-react";
 
 const Home = () => {
@@ -16,6 +18,7 @@ const Home = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [loading, setLoading] = useState(true);
   const { t, translateCategory } = useLanguage();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -103,11 +106,18 @@ const Home = () => {
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              to="/sell"
+              to={isAuthenticated ? "/sell" : "/login?redirect=/sell"}
               className="text-xs sm:text-sm font-semibold text-emerald-300 hover:text-emerald-200 flex items-center gap-1.5 px-4 py-2 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 transition-all border border-emerald-500/20"
             >
               <PlusCircle className="w-4 h-4" />
               <span>{t("sellItem")}</span>
+            </Link>
+            <Link
+              to={isAuthenticated ? "/my-listings" : "/login?redirect=/my-listings"}
+              className="text-xs sm:text-sm font-semibold text-sky-300 hover:text-sky-200 flex items-center gap-1.5 px-4 py-2 rounded-full bg-sky-500/10 hover:bg-sky-500/20 transition-all border border-sky-500/20"
+            >
+              <Package className="w-4 h-4" />
+              <span>{t("myListings")}</span>
             </Link>
           </div>
         </div>
