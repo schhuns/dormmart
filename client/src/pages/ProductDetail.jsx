@@ -17,6 +17,8 @@ import {
   Flag,
   Share2,
   Edit3,
+  Maximize2,
+  X,
 } from "lucide-react";
 
 const conditionColors = {
@@ -34,6 +36,7 @@ const ProductDetail = () => {
 
   const [product, setProduct] = useState(null);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
@@ -41,6 +44,23 @@ const ProductDetail = () => {
   const [reportSent, setReportSent] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Close lightbox on Escape and navigate with Arrow keys
+  useEffect(() => {
+    if (!lightboxOpen || !product) return;
+    const imgCount = product.images?.length || 1;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setLightboxOpen(false);
+      if (e.key === "ArrowLeft" && imgCount > 1) {
+        setActiveImageIdx((prev) => (prev === 0 ? imgCount - 1 : prev - 1));
+      }
+      if (e.key === "ArrowRight" && imgCount > 1) {
+        setActiveImageIdx((prev) => (prev === imgCount - 1 ? 0 : prev + 1));
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxOpen, product]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -126,16 +146,30 @@ const ProductDetail = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 lg:p-10 shadow-sm mb-16 md:mb-0">
         {/* Left Column: Image Carousel / Gallery */}
         <div className="space-y-4">
-          <div className="relative aspect-[4/3] bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800">
-            <img
-              src={images[activeImageIdx]}
-              alt={product.title}
-              className="w-full h-full object-cover"
-            />
+          <div className="relative aspect-[4/3] bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 group">
+            <div
+              onClick={() => setLightboxOpen(true)}
+              className="w-full h-full cursor-zoom-in block relative"
+              role="button"
+              tabIndex={0}
+              title="Click to view full image"
+            >
+              <img
+                src={images[activeImageIdx]}
+                alt={product.title}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+              />
+
+              {/* View full badge */}
+              <div className="absolute bottom-3 right-3 bg-slate-950/70 hover:bg-slate-950 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-xl backdrop-blur-md flex items-center gap-1.5 shadow-md pointer-events-none transition-all">
+                <Maximize2 className="w-3.5 h-3.5 text-brand-light" />
+                <span className="hidden sm:inline">View full</span>
+              </div>
+            </div>
 
             {/* Status overlay if not Available */}
             {product.status !== "Available" && (
-              <div className="absolute top-4 left-4">
+              <div className="absolute top-4 left-4 pointer-events-none">
                 <span className="bg-slate-900 text-white text-xs uppercase tracking-wider font-bold px-3 py-1.5 rounded-full shadow-md">
                   {product.status === "Reserved"
                     ? t("statusReserved")
@@ -150,18 +184,24 @@ const ProductDetail = () => {
             {images.length > 1 && (
               <>
                 <button
-                  onClick={() =>
-                    setActiveImageIdx((prev) => (prev === 0 ? images.length - 1 : prev - 1))
-                  }
-                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md transition-all"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIdx((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+                  }}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md transition-all z-10"
+                  aria-label="Previous image"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button
-                  onClick={() =>
-                    setActiveImageIdx((prev) => (prev === images.length - 1 ? 0 : prev + 1))
-                  }
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md transition-all"
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIdx((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-md transition-all z-10"
+                  aria-label="Next image"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>
@@ -368,6 +408,91 @@ const ProductDetail = () => {
               </form>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Fullscreen Image Lightbox Modal */}
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-[80] bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-3 sm:p-6 animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+        >
+          {/* Top Bar: Counter & Close */}
+          <div className="w-full max-w-5xl flex items-center justify-between text-white py-2 px-2 z-10">
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-white/10 backdrop-blur-md">
+              {activeImageIdx + 1} / {images.length}
+            </span>
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(false)}
+              className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors active:scale-95"
+              aria-label="Close full image view"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Central Image with Navigation */}
+          <div
+            className="relative flex-1 w-full max-w-5xl flex items-center justify-center min-h-0 py-2 cursor-pointer"
+            onClick={() => setLightboxOpen(false)}
+          >
+            <img
+              src={images[activeImageIdx]}
+              alt={product.title}
+              onClick={(e) => e.stopPropagation()}
+              className="max-h-[82vh] max-w-[95vw] object-contain rounded-xl shadow-2xl select-none cursor-default"
+            />
+
+            {/* Left / Right Navigation */}
+            {images.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIdx((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+                  }}
+                  className="absolute left-2 sm:left-4 p-3 rounded-full bg-black/60 hover:bg-black/85 text-white backdrop-blur-md transition-all shadow-lg active:scale-95"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageIdx((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+                  }}
+                  className="absolute right-2 sm:right-4 p-3 rounded-full bg-black/60 hover:bg-black/85 text-white backdrop-blur-md transition-all shadow-lg active:scale-95"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Bottom Thumbnails */}
+          {images.length > 1 && (
+            <div className="flex items-center gap-2.5 pt-2 pb-1 z-10">
+              {images.map((img, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveImageIdx(idx)}
+                  className={`w-14 h-14 rounded-xl overflow-hidden border-2 transition-all ${
+                    activeImageIdx === idx
+                      ? "border-brand-blue ring-2 ring-brand-blue/50 scale-105"
+                      : "border-white/20 opacity-60 hover:opacity-100"
+                  }`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
