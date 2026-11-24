@@ -133,10 +133,16 @@ export const getProducts = async (req, res) => {
     }
 
     // Price range filter
-    if (minPrice !== undefined || maxPrice !== undefined) {
+    const parsedMin = minPrice !== undefined && minPrice !== "" ? Number(minPrice) : null;
+    const parsedMax = maxPrice !== undefined && maxPrice !== "" ? Number(maxPrice) : null;
+
+    if (parsedMin !== null || parsedMax !== null) {
       query.price = {};
-      if (minPrice !== undefined) query.price.$gte = Number(minPrice);
-      if (maxPrice !== undefined) query.price.$lte = Number(maxPrice);
+      if (parsedMin !== null && !isNaN(parsedMin)) query.price.$gte = parsedMin;
+      if (parsedMax !== null && !isNaN(parsedMax)) query.price.$lte = parsedMax;
+      if (Object.keys(query.price).length === 0) {
+        delete query.price;
+      }
     }
 
     // Sort order
@@ -161,6 +167,8 @@ export const getProducts = async (req, res) => {
 
     res.json({
       products,
+      total: totalCount,
+      totalCount,
       pagination: {
         totalCount,
         totalPages: Math.ceil(totalCount / Number(limit)),

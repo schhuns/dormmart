@@ -65,7 +65,12 @@ const Marketplace = () => {
         params.set("status", "Available"); // Default browse available only
         const res = await api.get(`/products?${params.toString()}`);
         setProducts(res.data.products || []);
-        setTotalCount(res.data.total || 0);
+        const count =
+          res.data.pagination?.totalCount ??
+          res.data.totalCount ??
+          res.data.total ??
+          (res.data.products ? res.data.products.length : 0);
+        setTotalCount(count);
       } catch (err) {
         console.error("Fetch products error:", err);
       } finally {
