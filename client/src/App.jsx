@@ -71,6 +71,14 @@ const AppContent = () => {
             }
           />
           <Route
+            path="/products/:id/edit"
+            element={
+              <ProtectedRoute>
+                <CreateListing />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/my-listings"
             element={
               <ProtectedRoute>

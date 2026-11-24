@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, useParams, Link } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
-import { UploadCloud, X, PlusCircle, AlertCircle, RefreshCw } from "lucide-react";
+import {
+  UploadCloud,
+  X,
+  PlusCircle,
+  AlertCircle,
+  RefreshCw,
+  Edit3,
+  CheckCircle2,
+  ArrowLeft,
+} from "lucide-react";
 
 const CONDITIONS = ["New", "Like New", "Good", "Acceptable"];
 
@@ -11,17 +20,28 @@ const CreateListing = () => {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { t, translateCategory, translateCondition } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { id: paramId } = useParams();
+
+  const editId = paramId || searchParams.get("edit");
+  const isEditing = Boolean(editId);
 
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingListing, setLoadingListing] = useState(isEditing);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [condition, setCondition] = useState("Good");
   const [pickupLocation, setPickupLocation] = useState("");
+
+  // Existing images (for edit mode) and new file uploads
+  const [existingImages, setExistingImages] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [filePreviews, setFilePreviews] = useState([]);
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -40,18 +60,48 @@ const CreateListing = () => {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      navigate("/login?redirect=/sell");
+      navigate(`/login?redirect=${encodeURIComponent(isEditing ? `/products/${editId}/edit` : "/sell")}`);
     }
-  }, [authLoading, isAuthenticated, navigate]);
+  }, [authLoading, isAuthenticated, navigate, isEditing, editId]);
 
   useEffect(() => {
     fetchCategories();
   }, []);
 
+  // In edit mode, load existing listing data
+  useEffect(() => {
+    if (!editId) return;
+
+    const loadListingForEdit = async () => {
+      setLoadingListing(true);
+      setError(null);
+      try {
+        const res = await api.get(`/products/${editId}`);
+        const p = res.data;
+        setTitle(p.title || "");
+        setDescription(p.description || "");
+        setPrice(p.price === 0 ? "0" : String(p.price || ""));
+        setCategoryId(p.categoryId?._id || p.categoryId || "");
+        setCondition(p.condition || "Good");
+        setPickupLocation(p.pickupLocation || "");
+        setExistingImages(Array.isArray(p.images) ? p.images : []);
+      } catch (err) {
+        console.error("Failed to load listing for edit:", err);
+        setError("Could not load product details to edit. Please check if the listing exists.");
+      } finally {
+        setLoadingListing(false);
+      }
+    };
+
+    loadListingForEdit();
+  }, [editId]);
+
+  const totalImages = existingImages.length + selectedFiles.length;
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length + selectedFiles.length > 5) {
-      alert("You can upload a maximum of 5 images per listing.");
+    if (files.length + totalImages > 5) {
+      alert("You can have a maximum of 5 images per listing.");
       return;
     }
 
@@ -62,7 +112,11 @@ const CreateListing = () => {
     setFilePreviews((prev) => [...prev, ...newPreviews]);
   };
 
-  const removeImage = (index) => {
+  const removeExistingImage = (index) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeNewImage = (index) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
     setFilePreviews((prev) => prev.filter((_, i) => i !== index));
   };
@@ -71,7 +125,7 @@ const CreateListing = () => {
     e.preventDefault();
     setError(null);
 
-    if (selectedFiles.length === 0) {
+    if (totalImages === 0) {
       setError("Please add at least 1 photo of your item.");
       return;
     }
@@ -92,36 +146,65 @@ const CreateListing = () => {
       formData.append("condition", condition);
       formData.append("pickupLocation", pickupLocation);
 
+      if (isEditing) {
+        formData.append("existingImages", JSON.stringify(existingImages));
+      }
+
       selectedFiles.forEach((file) => {
         formData.append("images", file);
       });
 
-      const res = await api.post("/products", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      navigate(`/products/${res.data.product._id}`);
+      if (isEditing) {
+        await api.patch(`/products/${editId}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        navigate(`/products/${editId}`);
+      } else {
+        const res = await api.post("/products", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        navigate(`/products/${res.data.product._id}`);
+      }
     } catch (err) {
       console.error("Listing submission error:", err);
-      setError(err.response?.data?.error || "Failed to publish listing. Please try again.");
+      setError(err.response?.data?.error || (isEditing ? "Failed to update listing." : "Failed to publish listing. Please try again."));
     } finally {
       setSubmitting(false);
     }
   };
 
+  if (loadingListing) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center space-y-3">
+        <div className="w-8 h-8 border-3 border-brand-blue border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Loading product details...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6 sm:space-y-8">
-      <div>
+      {/* Top Breadcrumb & Heading */}
+      <div className="space-y-2">
+        {isEditing && (
+          <Link
+            to={`/products/${editId}`}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-brand-blue dark:hover:text-brand-light transition-colors mb-1"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to listing</span>
+          </Link>
+        )}
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-          {t("listAnItem")}
+          {isEditing ? t("editListingTitle") : t("listAnItem")}
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-          {t("listSubtitle")}
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          {isEditing ? t("editListingSubtitle") : t("listSubtitle")}
         </p>
       </div>
 
       {error && (
-        <div className="bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 p-4 rounded-2xl flex items-center gap-3 text-sm">
+        <div className="bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 p-4 rounded-2xl flex items-center gap-3 text-sm animate-in fade-in">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>{error}</span>
         </div>
@@ -130,19 +213,26 @@ const CreateListing = () => {
       <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-8 md:p-10 shadow-sm space-y-5 sm:space-y-6">
         {/* Photo Uploader */}
         <div className="space-y-3">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 block">
-            {t("productPhotos")} <span className="text-rose-500">*</span>{" "}
-            <span className="text-slate-400 dark:text-slate-500 font-normal">({t("photoLimit")})</span>
-          </label>
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 block">
+              {t("productPhotos")} <span className="text-rose-500">*</span>{" "}
+              <span className="text-slate-400 dark:text-slate-500 font-normal">({totalImages}/5 images)</span>
+            </label>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500">
+              {t("photoLimit")}
+            </span>
+          </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-4">
-            {filePreviews.map((preview, idx) => (
-              <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 group">
-                <img src={preview} alt="preview" className="w-full h-full object-cover" />
+            {/* Existing Images (when editing) */}
+            {existingImages.map((imgUrl, idx) => (
+              <div key={`existing-${idx}`} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 group shadow-xs">
+                <img src={imgUrl} alt="existing" className="w-full h-full object-cover" />
                 <button
                   type="button"
-                  onClick={() => removeImage(idx)}
-                  className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/70 text-white hover:bg-rose-600 transition-colors"
+                  onClick={() => removeExistingImage(idx)}
+                  className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/70 text-white hover:bg-rose-600 transition-colors shadow-sm"
+                  title="Remove image"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -154,10 +244,31 @@ const CreateListing = () => {
               </div>
             ))}
 
-            {filePreviews.length < 5 && (
+            {/* Newly selected images */}
+            {filePreviews.map((preview, idx) => (
+              <div key={`new-${idx}`} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-emerald-400 dark:border-emerald-500 group shadow-xs">
+                <img src={preview} alt="preview" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removeNewImage(idx)}
+                  className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/70 text-white hover:bg-rose-600 transition-colors shadow-sm"
+                  title="Remove image"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+                <span className="absolute bottom-2 left-2 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                  New
+                </span>
+              </div>
+            ))}
+
+            {/* Upload Button */}
+            {totalImages < 5 && (
               <label className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-brand-blue dark:hover:border-brand-blue rounded-2xl aspect-square flex flex-col items-center justify-center cursor-pointer p-4 text-center hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-all">
                 <UploadCloud className="w-7 h-7 text-slate-400 dark:text-slate-500 mb-1" />
-                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{t("uploadPhoto")}</span>
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {isEditing && totalImages > 0 ? t("addMorePhotos") : t("uploadPhoto")}
+                </span>
                 <span className="text-[10px] text-slate-400 dark:text-slate-500">JPG, PNG, WebP</span>
                 <input
                   type="file"
@@ -200,7 +311,7 @@ const CreateListing = () => {
                   onClick={fetchCategories}
                   className="text-[11px] font-semibold text-brand-blue dark:text-brand-light hover:underline flex items-center gap-1"
                 >
-                  <RefreshCw className="w-3 h-3" />
+                  <RefreshCw className="w-3.5 h-3.5" />
                   {t("reloadCategories")}
                 </button>
               )}
@@ -308,11 +419,20 @@ const CreateListing = () => {
           ></textarea>
         </div>
 
-        {/* Submit Button */}
+        {/* Submit & Cancel Buttons */}
         <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-slate-400 dark:text-slate-500 order-2 sm:order-1 text-center sm:text-left">
-            By publishing, you agree to the Dorm Mart community guidelines.
-          </p>
+          {isEditing ? (
+            <Link
+              to="/my-listings"
+              className="text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors order-2 sm:order-1"
+            >
+              {t("cancelEdit")}
+            </Link>
+          ) : (
+            <p className="text-xs text-slate-400 dark:text-slate-500 order-2 sm:order-1 text-center sm:text-left">
+              By publishing, you agree to the Dorm Mart community guidelines.
+            </p>
+          )}
 
           <button
             type="submit"
@@ -322,7 +442,12 @@ const CreateListing = () => {
             {submitting ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>{t("publishing")}</span>
+                <span>{isEditing ? t("savingChanges") : t("publishing")}</span>
+              </>
+            ) : isEditing ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>{t("saveChanges")}</span>
               </>
             ) : (
               <>

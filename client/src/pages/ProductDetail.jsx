@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Flag,
   Share2,
+  Edit3,
 } from "lucide-react";
 
 const conditionColors = {
@@ -254,14 +255,23 @@ const ProductDetail = () => {
           {/* Primary Action: Contact Seller Button */}
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
             {isOwner ? (
-              <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-4 text-center">
+              <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-4 text-center space-y-3">
                 <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">{t("isYourListing")}</p>
-                <Link
-                  to="/my-listings"
-                  className="inline-block mt-2 text-xs font-bold text-brand-blue dark:text-brand-light hover:underline"
-                >
-                  {t("manageInListings")}
-                </Link>
+                <div className="flex items-center justify-center gap-2">
+                  <Link
+                    to={`/sell?edit=${product._id}`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-blue hover:bg-blue-600 text-white text-xs font-semibold shadow-xs transition-colors"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>{t("editListing")}</span>
+                  </Link>
+                  <Link
+                    to="/my-listings"
+                    className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-50 transition-colors border border-slate-200 dark:border-slate-600"
+                  >
+                    <span>{t("manageInListings")}</span>
+                  </Link>
+                </div>
               </div>
             ) : (
               <button

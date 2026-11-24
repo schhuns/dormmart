@@ -11,6 +11,7 @@ import {
   ExternalLink,
   AlertCircle,
   CheckCircle2,
+  Edit3,
 } from "lucide-react";
 
 const STATUS_OPTIONS = ["Available", "Reserved", "Sold", "Hidden"];
@@ -151,6 +152,14 @@ const MyListings = () => {
                     </option>
                   ))}
                 </select>
+
+                <Link
+                  to={`/sell?edit=${item._id}`}
+                  className="p-2 text-slate-500 dark:text-slate-400 hover:text-brand-blue dark:hover:text-brand-light hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  title={t("editListing")}
+                >
+                  <Edit3 className="w-4 h-4" />
+                </Link>
 
                 <Link
                   to={`/products/${item._id}`}

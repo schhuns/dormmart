@@ -303,10 +303,49 @@ export const updateProduct = async (req, res) => {
 
     if (title !== undefined) product.title = title.trim();
     if (description !== undefined) product.description = description.trim();
-    if (price !== undefined) product.price = Number(price);
+    if (price !== undefined) {
+      const numPrice = Number(price);
+      if (isNaN(numPrice) || numPrice < 0) {
+        return res.status(400).json({ error: "Price must be a valid positive number or 0" });
+      }
+      product.price = numPrice;
+    }
     if (categoryId !== undefined) product.categoryId = categoryId;
     if (condition !== undefined) product.condition = condition;
     if (pickupLocation !== undefined) product.pickupLocation = pickupLocation.trim();
+
+    // Process retained images and newly uploaded images
+    let updatedImages = [];
+    if (req.body.existingImages) {
+      try {
+        const parsed = typeof req.body.existingImages === "string"
+          ? JSON.parse(req.body.existingImages)
+          : req.body.existingImages;
+        if (Array.isArray(parsed)) {
+          updatedImages = parsed.filter(Boolean);
+        } else if (typeof parsed === "string") {
+          updatedImages = [parsed];
+        }
+      } catch (e) {
+        if (typeof req.body.existingImages === "string" && req.body.existingImages.trim()) {
+          updatedImages = [req.body.existingImages.trim()];
+        }
+      }
+    } else if (!req.files || req.files.length === 0) {
+      // If neither existingImages nor new files provided, keep existing images
+      updatedImages = product.images;
+    }
+
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const url = await uploadImageToStorage(file.buffer, file.originalname);
+        updatedImages.push(url);
+      }
+    }
+
+    if (updatedImages.length > 0) {
+      product.images = updatedImages.slice(0, 5); // Max 5 images
+    }
 
     await product.save();
     await product.populate("categoryId", "name image");

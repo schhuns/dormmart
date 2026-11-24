@@ -90,6 +90,14 @@ const translations = {
     descPlaceholder: "Describe item condition, reasons for selling, and any included accessories...",
     publishListing: "Publish Listing",
     publishing: "Publishing...",
+    editListing: "Edit Listing",
+    editListingTitle: "Edit Product Listing",
+    editListingSubtitle: "Update your product details, price, condition, or photos.",
+    saveChanges: "Save Changes",
+    savingChanges: "Saving Changes...",
+    currentPhotos: "Current Photos",
+    addMorePhotos: "Add New Photos",
+    cancelEdit: "Cancel Edit",
 
     // Profile & Settings
     profileTitle: "Profile & Settings",
@@ -265,6 +273,14 @@ const translations = {
     descPlaceholder: "Mô tả tình trạng đồ dùng, lý do bán, phụ kiện đi kèm nếu có...",
     publishListing: "Đăng tin ngay",
     publishing: "Đang đăng tin...",
+    editListing: "Chỉnh sửa tin đăng",
+    editListingTitle: "Chỉnh sửa bài đăng sản phẩm",
+    editListingSubtitle: "Cập nhật lại thông tin, giá bán, tình trạng hoặc ảnh sản phẩm.",
+    saveChanges: "Lưu thay đổi",
+    savingChanges: "Đang lưu thay đổi...",
+    currentPhotos: "Ảnh hiện tại",
+    addMorePhotos: "Thêm ảnh mới",
+    cancelEdit: "Hủy chỉnh sửa",
 
     // Profile & Settings
     profileTitle: "Hồ sơ & Cài đặt",
