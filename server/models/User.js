@@ -54,6 +54,8 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+userSchema.index({ fullName: 1 }, { unique: true, collation: { locale: "en", strength: 2 } });
+
 // Method to return public safe profile (never exposes private email or unshared contacts)
 userSchema.methods.toPublicProfile = function () {
   return {

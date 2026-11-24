@@ -7,6 +7,44 @@ import { generateToken } from "../middleware/auth.js";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
+ * Helper to generate a unique full name / display name across all accounts
+ */
+export const generateUniqueFullName = async (baseName, excludeUserId = null) => {
+  let cleanBase = (baseName || "Dorm Mart User").trim().replace(/\s+/g, " ");
+  if (!cleanBase) cleanBase = "Dorm Mart User";
+
+  const escapeRegex = (str) => str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+
+  const baseQuery = {
+    fullName: { $regex: new RegExp(`^${escapeRegex(cleanBase)}$`, "i") },
+  };
+  if (excludeUserId) {
+    baseQuery._id = { $ne: excludeUserId };
+  }
+
+  const existing = await User.findOne(baseQuery);
+  if (!existing) {
+    return cleanBase;
+  }
+
+  let suffix = 1;
+  while (true) {
+    const candidate = `${cleanBase}_${suffix}`;
+    const candQuery = {
+      fullName: { $regex: new RegExp(`^${escapeRegex(candidate)}$`, "i") },
+    };
+    if (excludeUserId) {
+      candQuery._id = { $ne: excludeUserId };
+    }
+    const found = await User.findOne(candQuery);
+    if (!found) {
+      return candidate;
+    }
+    suffix++;
+  }
+};
+
+/**
  * EMAIL REGISTER: Create new account with email & password
  * POST /api/auth/register
  */
@@ -19,7 +57,7 @@ export const emailRegister = async (req, res) => {
     }
 
     const cleanEmail = email.toLowerCase().trim();
-    const cleanName = fullName.trim();
+    const cleanName = fullName.trim().replace(/\s+/g, " ");
 
     if (!EMAIL_REGEX.test(cleanEmail)) {
       return res.status(400).json({ error: "Please enter a valid email address" });
@@ -32,6 +70,14 @@ export const emailRegister = async (req, res) => {
     const existingUser = await User.findOne({ email: cleanEmail });
     if (existingUser) {
       return res.status(409).json({ error: "An account with this email already exists" });
+    }
+
+    const escapeRegex = (str) => str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    const existingName = await User.findOne({
+      fullName: { $regex: new RegExp(`^${escapeRegex(cleanName)}$`, "i") },
+    });
+    if (existingName) {
+      return res.status(409).json({ error: "This display name is already taken. Please choose a different name." });
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
@@ -165,11 +211,12 @@ export const googleSignIn = async (req, res) => {
         if (!user.profileImage && picture) user.profileImage = picture;
         await user.save();
       } else {
-        // First-time user: Automatic account creation
+        // First-time user: Automatic account creation with guaranteed unique display name
+        const uniqueFullName = await generateUniqueFullName(name || "Dorm Mart User");
         user = await User.create({
           googleId,
           email: email.toLowerCase(),
-          fullName: name || "Dorm Mart User",
+          fullName: uniqueFullName,
           profileImage: picture || "",
           role: "USER",
           accountStatus: "ACTIVE",
@@ -226,8 +273,25 @@ export const updateProfile = async (req, res) => {
   try {
     const { fullName, profileImage, contacts } = req.body;
 
-    if (fullName) req.user.fullName = fullName.trim();
-    if (profileImage) req.user.profileImage = profileImage;
+    if (fullName !== undefined) {
+      const cleanName = fullName.trim().replace(/\s+/g, " ");
+      if (!cleanName) {
+        return res.status(400).json({ error: "Display name cannot be empty" });
+      }
+
+      const escapeRegex = (str) => str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      const existingName = await User.findOne({
+        _id: { $ne: req.user._id },
+        fullName: { $regex: new RegExp(`^${escapeRegex(cleanName)}$`, "i") },
+      });
+      if (existingName) {
+        return res.status(409).json({ error: "This display name is already taken. Please choose another name." });
+      }
+
+      req.user.fullName = cleanName;
+    }
+
+    if (profileImage !== undefined) req.user.profileImage = profileImage;
 
     if (contacts && typeof contacts === "object") {
       req.user.contacts = {

@@ -16,6 +16,7 @@ import {
   Moon,
   Sparkles,
   Smartphone,
+  AlertCircle,
 } from "lucide-react";
 
 const Profile = () => {
@@ -31,15 +32,17 @@ const Profile = () => {
   const [phone, setPhone] = useState(user?.contacts?.phone || "");
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
     setSavedSuccess(false);
+    setSaveError("");
 
     try {
       await updateUserProfile({
-        fullName,
+        fullName: fullName.trim(),
         contacts: {
           zalo,
           telegram,
@@ -50,7 +53,7 @@ const Profile = () => {
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
     } catch (err) {
-      alert(t("saveFailedMsg") || "Failed to save profile.");
+      setSaveError(err.response?.data?.error || t("saveFailedMsg") || "Failed to save profile.");
     } finally {
       setSaving(false);
     }
@@ -71,6 +74,13 @@ const Profile = () => {
         <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 p-4 rounded-2xl flex items-center gap-3 text-sm animate-in fade-in">
           <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
           <span>{t("savedSuccessMsg")}</span>
+        </div>
+      )}
+
+      {saveError && (
+        <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 p-4 rounded-2xl flex items-center gap-3 text-sm animate-in fade-in">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600 dark:text-rose-400" />
+          <span>{saveError}</span>
         </div>
       )}
 
