@@ -28,7 +28,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Anti-FOUC Theme Script -->
+    <!-- Anti-FOUC Theme Script & Netlify Badge Positioner -->
     <script>
       (function() {
         try {
@@ -39,6 +39,20 @@
             document.documentElement.classList.remove('dark');
           }
         } catch (e) {}
+
+        // Automatically position Netlify HUD badge above the mobile bottom nav
+        function repositionNetlifyBadge() {
+          var badge = document.getElementById('nl-badge-frame') || document.querySelector('iframe[title="Powered by Netlify"]');
+          if (badge) {
+            badge.style.setProperty('bottom', 'calc(4.5rem + env(safe-area-inset-bottom, 0px))', 'important');
+            badge.style.setProperty('z-index', '35', 'important');
+          }
+        }
+        if (typeof MutationObserver !== 'undefined') {
+          var obs = new MutationObserver(repositionNetlifyBadge);
+          obs.observe(document.documentElement, { childList: true, subtree: true });
+        }
+        window.addEventListener('load', repositionNetlifyBadge);
       })();
     </script>
   </head>

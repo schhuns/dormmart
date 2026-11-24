@@ -36,3 +36,22 @@ body {
     font-size: 16px !important;
   }
 }
+
+/* Move Netlify HUD badge up so it never blocks the bottom navigation menu */
+#nl-badge-frame,
+#nl-hud-frame,
+iframe[title="Powered by Netlify"],
+iframe[id^="nl-"] {
+  bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px)) !important;
+  z-index: 35 !important;
+}
+
+@media screen and (min-width: 769px) {
+  #nl-badge-frame,
+  #nl-hud-frame,
+  iframe[title="Powered by Netlify"],
+  iframe[id^="nl-"] {
+    bottom: 16px !important;
+    right: 16px !important;
+  }
+}
