@@ -70,7 +70,7 @@ const Navbar = () => {
               placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-100/80 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 focus:bg-white dark:focus:bg-slate-800 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 pl-10 pr-4 py-2 rounded-full border border-transparent focus:border-brand-blue focus:outline-none transition-all"
+              className="w-full bg-slate-100/80 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 focus:bg-white dark:focus:bg-slate-800 text-base sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 pl-10 pr-4 py-2 rounded-full border border-transparent focus:border-brand-blue focus:outline-none transition-all"
             />
             <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
           </form>
@@ -219,7 +219,7 @@ const Navbar = () => {
               placeholder={t("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm pl-10 pr-4 py-2.5 rounded-xl border border-transparent focus:border-brand-blue focus:outline-none"
+              className="w-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-base sm:text-sm pl-10 pr-4 py-2.5 rounded-xl border border-transparent focus:border-brand-blue focus:outline-none"
             />
             <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
           </form>

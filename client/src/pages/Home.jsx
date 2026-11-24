@@ -82,7 +82,7 @@ const Home = () => {
                 placeholder={t("searchPlaceholder")}
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
-                className="w-full bg-transparent text-slate-800 dark:text-slate-100 placeholder-slate-400 text-sm focus:outline-none"
+                className="w-full bg-transparent text-slate-800 dark:text-slate-100 placeholder-slate-400 text-base sm:text-sm focus:outline-none"
               />
             </div>
             <button

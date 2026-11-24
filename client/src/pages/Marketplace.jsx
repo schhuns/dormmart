@@ -127,7 +127,7 @@ const Marketplace = () => {
             placeholder={t("searchPlaceholder")}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm pl-10 pr-4 py-2.5 rounded-full border border-slate-200 dark:border-slate-800 focus:border-brand-blue focus:outline-none shadow-sm"
+            className="w-full bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-base sm:text-sm pl-10 pr-4 py-2.5 rounded-full border border-slate-200 dark:border-slate-800 focus:border-brand-blue focus:outline-none shadow-sm"
           />
           <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
         </form>
