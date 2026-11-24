@@ -157,6 +157,24 @@ const translations = {
     statusReserved: "Reserved",
     statusSold: "Sold",
     statusHidden: "Hidden",
+
+    // PWA & Install
+    installApp: "Install App",
+    addToHomeScreen: "Add to Home Screen",
+    installAppDesc: "Add Dorm Mart to your home screen for quick 1-tap access and a full-screen app experience.",
+    installModalTitle: "Install Dorm Mart App",
+    installModalSubtitle: "Add to your phone's home screen with its own official icon",
+    installBtn: "Install Now",
+    installStepsTitle: "How to add on your phone:",
+    installStep1Title: "1. Tap the Share button",
+    installStep1Desc: "At the bottom of Safari, tap the Share icon (square with arrow).",
+    installStep2Title: "2. Select 'Add to Home Screen'",
+    installStep2Desc: "Scroll down the menu and tap 'Add to Home Screen' (+).",
+    installStep3Title: "3. Tap 'Add' in the top right",
+    installStep3Desc: "Dorm Mart will appear directly on your home screen with its custom store icon!",
+    installedBadge: "App Installed",
+    installedDesc: "You are browsing Dorm Mart as an installed web application.",
+    close: "Close",
   },
   vi: {
     // Nav & Common
@@ -314,6 +332,24 @@ const translations = {
     statusReserved: "Đã đặt trước",
     statusSold: "Đã bán",
     statusHidden: "Đã ẩn",
+
+    // PWA & Install
+    installApp: "Cài đặt ứng dụng",
+    addToHomeScreen: "Thêm vào màn hình chính",
+    installAppDesc: "Thêm Dorm Mart vào màn hình chính điện thoại để mở nhanh 1 chạm và sử dụng toàn màn hình.",
+    installModalTitle: "Cài đặt ứng dụng Dorm Mart",
+    installModalSubtitle: "Thêm vào màn hình chính điện thoại với biểu tượng ứng dụng riêng",
+    installBtn: "Cài đặt ngay",
+    installStepsTitle: "Cách thêm vào màn hình chính:",
+    installStep1Title: "1. Nhấn nút Chia sẻ",
+    installStep1Desc: "Ở thanh công cụ dưới cùng Safari (iPhone), nhấn biểu tượng Chia sẻ (ô vuông có mũi tên lên).",
+    installStep2Title: "2. Chọn 'Thêm vào MH chính'",
+    installStep2Desc: "Kéo danh sách menu xuống và nhấn vào dòng 'Thêm vào MH chính' (biểu tượng dấu +).",
+    installStep3Title: "3. Nhấn 'Thêm' ở góc trên",
+    installStep3Desc: "Dorm Mart sẽ xuất hiện ngay trên màn hình chính của bạn với biểu tượng ứng dụng riêng biệt!",
+    installedBadge: "Đã cài đặt",
+    installedDesc: "Bạn đang sử dụng Dorm Mart ở chế độ ứng dụng độc lập.",
+    close: "Đóng",
   },
 };
 

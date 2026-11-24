@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useFavorites } from "../context/FavoritesContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
+import { usePWA } from "../context/PWAContext";
 import {
   ShoppingBag,
   Search,
@@ -18,6 +19,7 @@ import {
   Globe,
   Sun,
   Moon,
+  Smartphone,
 } from "lucide-react";
 
 const Navbar = () => {
@@ -25,6 +27,7 @@ const Navbar = () => {
   const { count: favoritesCount } = useFavorites();
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme, isDark, setTheme } = useTheme();
+  const { promptInstall, openInstallModal, isStandalone } = usePWA();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -125,6 +128,18 @@ const Navbar = () => {
             >
               <span>{lang === "vi" ? "🇻🇳 VI" : "🇬🇧 EN"}</span>
             </button>
+
+            {/* PWA Install / Add to Home Screen Button */}
+            {!isStandalone && (
+              <button
+                onClick={promptInstall}
+                className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-all shadow-2xs"
+                title={t("addToHomeScreen")}
+              >
+                <Smartphone className="w-3.5 h-3.5 text-brand-blue dark:text-brand-light" />
+                <span className="hidden lg:inline">{t("installApp")}</span>
+              </button>
+            )}
 
             {/* Prominent Sell Button (Desktop & Tablet only) */}
             <Link
@@ -270,6 +285,25 @@ const Navbar = () => {
               </button>
             </div>
           </div>
+
+          {/* Add to Home Screen in mobile drawer */}
+          {!isStandalone && (
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openInstallModal();
+              }}
+              className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-blue-50 to-sky-50 dark:from-slate-800 dark:to-blue-950/40 border border-blue-200/60 dark:border-blue-900/50 text-brand-blue dark:text-brand-light text-sm font-semibold transition-all hover:shadow-xs active:scale-[0.99]"
+            >
+              <span className="flex items-center gap-2">
+                <Smartphone className="w-4 h-4" />
+                <span>{t("addToHomeScreen")}</span>
+              </span>
+              <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 text-brand-navy dark:text-white shadow-2xs">
+                +
+              </span>
+            </button>
+          )}
 
           <div className="space-y-1 pt-1">
             <Link

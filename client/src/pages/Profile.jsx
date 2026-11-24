@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
+import { usePWA } from "../context/PWAContext";
 import {
   User as UserIcon,
   MessageCircle,
@@ -14,12 +15,14 @@ import {
   Sun,
   Moon,
   Sparkles,
+  Smartphone,
 } from "lucide-react";
 
 const Profile = () => {
   const { user, updateUserProfile } = useAuth();
   const { lang, setLang, t } = useLanguage();
   const { theme, setTheme, isDark } = useTheme();
+  const { openInstallModal, isStandalone } = usePWA();
 
   const [fullName, setFullName] = useState(user?.fullName || "");
   const [zalo, setZalo] = useState(user?.contacts?.zalo || "");
@@ -231,6 +234,47 @@ const Profile = () => {
               </div>
             )}
           </button>
+        </div>
+      </div>
+
+      {/* App & Home Screen Card */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-7 shadow-sm space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-md flex-shrink-0 ring-2 ring-slate-100 dark:ring-slate-800">
+              <img
+                src="/apple-touch-icon.png"
+                alt="Dorm Mart Icon"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                {t("addToHomeScreen")}
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {t("installAppDesc")}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-1">
+          {isStandalone ? (
+            <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300 text-xs font-semibold">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>{t("installedDesc")}</span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={openInstallModal}
+              className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-brand-navy dark:bg-brand-blue hover:bg-brand-dark dark:hover:bg-blue-600 text-white text-xs font-bold shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95"
+            >
+              <Smartphone className="w-4 h-4" />
+              <span>{t("installApp")}</span>
+            </button>
+          )}
         </div>
       </div>
 

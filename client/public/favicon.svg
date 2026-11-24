@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1a2e"/>
+      <stop offset="100%" stop-color="#16365c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="25%" r="60%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#0b1a2e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="roofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#glow)"/>
+
+  <!-- Store Roof Awning Base -->
+  <path d="M 160 148 L 352 148 L 416 236 L 96 236 Z" fill="#1c4676" stroke="#ffffff" stroke-width="12" stroke-linejoin="round"/>
+  
+  <!-- Striped Awning Ribs -->
+  <polygon points="160,148 208,148 176,236 96,236" fill="url(#roofGrad)" fill-opacity="0.9"/>
+  <polygon points="256,148 304,148 336,236 256,236" fill="url(#roofGrad)" fill-opacity="0.9"/>
+
+  <!-- Scalloped Awning Flaps -->
+  <path d="
+    M 96 236 Q 136 272 176 236 
+    Q 216 272 256 236 
+    Q 296 272 336 236 
+    Q 376 272 416 236
+  " fill="#38bdf8" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+
+  <!-- Store Body -->
+  <rect x="128" y="256" width="256" height="150" rx="20" fill="#122c4c" stroke="#ffffff" stroke-width="12"/>
+
+  <!-- Store Window -->
+  <rect x="152" y="278" width="94" height="96" rx="12" fill="#1e446e" stroke="#38bdf8" stroke-width="8"/>
+  <line x1="168" y1="354" x2="228" y2="294" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-opacity="0.5"/>
+
+  <!-- Store Door -->
+  <rect x="266" y="278" width="94" height="128" rx="12" fill="#0a182c" stroke="#ffffff" stroke-width="8"/>
+  <line x1="284" y1="334" x2="284" y2="356" stroke="#10b981" stroke-width="10" stroke-linecap="round"/>
+
+  <!-- Verified Badge -->
+  <circle cx="396" cy="180" r="42" fill="#10b981" stroke="#ffffff" stroke-width="10"/>
+  <path d="M 380 180 L 392 192 L 414 170" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -4,8 +4,10 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { PWAProvider } from "./context/PWAContext";
 import Navbar from "./components/Navbar";
 import MobileBottomNav from "./components/MobileBottomNav";
+import InstallModal from "./components/InstallModal";
 
 // Pages
 import Home from "./pages/Home";
@@ -108,6 +110,7 @@ const AppContent = () => {
         </Routes>
       </main>
       <MobileBottomNav />
+      <InstallModal />
     </div>
   );
 };
@@ -118,9 +121,11 @@ const App = () => {
       <LanguageProvider>
         <AuthProvider>
           <FavoritesProvider>
-            <BrowserRouter>
-              <AppContent />
-            </BrowserRouter>
+            <PWAProvider>
+              <BrowserRouter>
+                <AppContent />
+              </BrowserRouter>
+            </PWAProvider>
           </FavoritesProvider>
         </AuthProvider>
       </LanguageProvider>
