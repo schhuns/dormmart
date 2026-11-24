@@ -370,27 +370,6 @@ const ProductDetail = () => {
           </div>
         </div>
       )}
-
-      {/* Mobile Sticky Contact Bar */}
-      {!isOwner && (
-        <div className="md:hidden fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom,0px))] left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 flex items-center justify-between gap-3 shadow-lg">
-          <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block tracking-wider">
-              Price
-            </span>
-            <span className="text-base font-extrabold text-brand-navy dark:text-brand-light">
-              {formatVND(product.price, { freeText: t("freeGiveaway") })}
-            </span>
-          </div>
-          <button
-            onClick={() => setContactModalOpen(true)}
-            className="flex-1 max-w-[200px] bg-brand-navy dark:bg-brand-blue hover:bg-brand-blue dark:hover:bg-blue-600 text-white py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-all"
-          >
-            <MessageCircle className="w-4 h-4 text-emerald-400" />
-            <span>{t("contactSeller")}</span>
-          </button>
-        </div>
-      )}
     </div>
   );
 };
